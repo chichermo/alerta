@@ -7,6 +7,17 @@ body {
   height: 100%;
 }
 
+body {
+  background-image: radial-gradient(
+      circle at top left,
+      rgba(30, 64, 175, 0.18),
+      transparent 45%
+    ),
+    radial-gradient(circle at 20% 20%, rgba(14, 116, 144, 0.2), transparent 40%),
+    radial-gradient(circle at 80% 0%, rgba(124, 58, 237, 0.16), transparent 45%);
+  background-attachment: fixed;
+}
+
 .leaflet-container {
   height: 100%;
   width: 100%;

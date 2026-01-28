@@ -2,16 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { createReport } from "../lib/api";
-
-const types = [
-  "corte_luz",
-  "corte_agua",
-  "incendio",
-  "transporte",
-  "protesta",
-  "clima",
-  "otro",
-];
+import { incidentTypes } from "../lib/incident-meta";
 
 export default function ReportForm({ onCreated }: { onCreated: () => void }) {
   const [loading, setLoading] = useState(false);
@@ -23,6 +14,7 @@ export default function ReportForm({ onCreated }: { onCreated: () => void }) {
     lat: -33.45,
     lng: -70.66,
   });
+  const [geoStatus, setGeoStatus] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -45,56 +37,111 @@ export default function ReportForm({ onCreated }: { onCreated: () => void }) {
     }
   }
 
+  function handleUseLocation() {
+    if (!navigator.geolocation) {
+      setGeoStatus("Geolocalización no disponible.");
+      return;
+    }
+    setGeoStatus("Obteniendo ubicación...");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setForm({
+          ...form,
+          lat: Number(position.coords.latitude.toFixed(5)),
+          lng: Number(position.coords.longitude.toFixed(5)),
+        });
+        setGeoStatus("Ubicación actualizada.");
+      },
+      () => {
+        setGeoStatus("No se pudo obtener ubicación.");
+      }
+    );
+  }
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+      className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
     >
-      <div className="text-sm font-semibold">Reportar incidente</div>
+      <div>
+        <div className="text-sm font-semibold text-slate-900">
+          Reportar incidente
+        </div>
+        <p className="text-xs text-slate-500">
+          Tu reporte ayuda a validar alertas en tiempo real.
+        </p>
+      </div>
       <input
-        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
-        placeholder="Título"
+        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+        placeholder="Título del incidente"
         value={form.title}
         onChange={(event) => setForm({ ...form, title: event.target.value })}
         required
       />
-      <select
-        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
-        value={form.type}
-        onChange={(event) => setForm({ ...form, type: event.target.value })}
-      >
-        {types.map((type) => (
-          <option key={type} value={type}>
-            {type}
-          </option>
-        ))}
-      </select>
+      <div>
+        <div className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+          Tipo de evento
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {incidentTypes.map((type) => (
+            <button
+              type="button"
+              key={type.value}
+              onClick={() => setForm({ ...form, type: type.value })}
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                form.type === type.value
+                  ? "bg-slate-900 text-white"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              }`}
+            >
+              {type.label}
+            </button>
+          ))}
+        </div>
+      </div>
       <textarea
-        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
         placeholder="Descripción (opcional)"
         value={form.description}
         onChange={(event) =>
           setForm({ ...form, description: event.target.value })
         }
       />
-      <div className="grid grid-cols-2 gap-2">
-        <input
-          type="number"
-          step="0.0001"
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm"
-          value={form.lat}
-          onChange={(event) => setForm({ ...form, lat: Number(event.target.value) })}
-        />
-        <input
-          type="number"
-          step="0.0001"
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm"
-          value={form.lng}
-          onChange={(event) => setForm({ ...form, lng: Number(event.target.value) })}
-        />
+      <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-3">
+        <div className="flex items-center justify-between text-xs text-slate-500">
+          <span>Ubicación</span>
+          <button
+            type="button"
+            onClick={handleUseLocation}
+            className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm"
+          >
+            Usar mi ubicación
+          </button>
+        </div>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <input
+            type="number"
+            step="0.0001"
+            className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            value={form.lat}
+            onChange={(event) =>
+              setForm({ ...form, lat: Number(event.target.value) })
+            }
+          />
+          <input
+            type="number"
+            step="0.0001"
+            className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            value={form.lng}
+            onChange={(event) =>
+              setForm({ ...form, lng: Number(event.target.value) })
+            }
+          />
+        </div>
+        {geoStatus && <div className="mt-2 text-xs text-slate-500">{geoStatus}</div>}
       </div>
       <button
-        className="w-full rounded-md bg-slate-900 px-3 py-2 text-sm text-white"
+        className="w-full rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
         disabled={loading}
       >
         {loading ? "Enviando..." : "Enviar reporte"}
