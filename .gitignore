@@ -7,6 +7,9 @@ build/
 .next/
 .turbo/
 .cache/
+.pytest_cache/
+__pycache__/
+*.pyc
 .DS_Store
 coverage/
 *.log
