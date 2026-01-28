@@ -3,6 +3,7 @@
 import { CircleMarker, MapContainer, Popup, TileLayer } from "react-leaflet";
 import { Incident } from "@alerta/shared";
 import { getTypeMeta } from "../lib/incident-meta";
+import type { LatLngExpression } from "leaflet";
 
 const defaultCenter: [number, number] = [-33.45, -70.66];
 
@@ -17,9 +18,15 @@ export default function MapView({ incidents }: { incidents: Incident[] }) {
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         {incidents.map((incident) => (
+          (() => {
+            const position: LatLngExpression = [
+              incident.location.lat,
+              incident.location.lng,
+            ];
+            return (
           <CircleMarker
             key={incident.id}
-            position={[incident.location.lat, incident.location.lng]}
+            center={position}
             radius={10}
             pathOptions={{
               color: getTypeMeta(incident.type).mapColor,
@@ -36,6 +43,8 @@ export default function MapView({ incidents }: { incidents: Incident[] }) {
               </div>
             </Popup>
           </CircleMarker>
+            );
+          })()
         ))}
       </MapContainer>
     </div>
