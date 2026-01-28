@@ -6,6 +6,25 @@ export const API_URL =
 
 export const realtimeEnabled = !supabaseEnabled;
 
+export function subscribeToIncidents(onChange: () => void) {
+  if (!supabaseEnabled || !supabase) {
+    return () => undefined;
+  }
+
+  const channel = supabase
+    .channel("incidents_changes")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "incidents" },
+      () => onChange()
+    )
+    .subscribe();
+
+  return () => {
+    void supabase.removeChannel(channel);
+  };
+}
+
 type IncidentRow = {
   id: string;
   title: string;

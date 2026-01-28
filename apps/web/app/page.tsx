@@ -7,7 +7,14 @@ import dynamic from "next/dynamic";
 import AlertPanel from "../components/AlertPanel";
 import IncidentList from "../components/IncidentList";
 import ReportForm from "../components/ReportForm";
-import { API_URL, fetchAlerts, fetchIncidents, realtimeEnabled } from "../lib/api";
+import {
+  API_URL,
+  fetchAlerts,
+  fetchIncidents,
+  realtimeEnabled,
+  subscribeToIncidents,
+} from "../lib/api";
+import { supabaseEnabled } from "../lib/supabase";
 
 const MapView = dynamic(() => import("../components/MapView"), { ssr: false });
 
@@ -31,6 +38,12 @@ export default function HomePage() {
 
   useEffect(() => {
     refreshData();
+    if (supabaseEnabled) {
+      const unsubscribe = subscribeToIncidents(() => {
+        refreshData();
+      });
+      return () => unsubscribe();
+    }
     if (!realtimeEnabled) {
       const interval = setInterval(() => {
         refreshData();
