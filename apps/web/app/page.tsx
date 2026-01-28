@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import AlertPanel from "../components/AlertPanel";
 import IncidentList from "../components/IncidentList";
 import ReportForm from "../components/ReportForm";
-import { API_URL, fetchAlerts, fetchIncidents } from "../lib/api";
+import { API_URL, fetchAlerts, fetchIncidents, realtimeEnabled } from "../lib/api";
 
 const MapView = dynamic(() => import("../components/MapView"), { ssr: false });
 
@@ -31,6 +31,12 @@ export default function HomePage() {
 
   useEffect(() => {
     refreshData();
+    if (!realtimeEnabled) {
+      const interval = setInterval(() => {
+        refreshData();
+      }, 20000);
+      return () => clearInterval(interval);
+    }
     const socket = io(`${API_URL}/realtime`);
     socket.on("incident_update", (incident: Incident) => {
       setIncidents((prev) => {

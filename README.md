@@ -15,6 +15,15 @@ Radar ciudadano inteligente de incidentes y servicios críticos. Esta base inclu
 2. Levantar servicios (3 procesos):
    - `npm run dev`
 
+## Supabase (producción en Vercel)
+
+Para usar base de datos en producción, configura Supabase y variables de entorno:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+Script SQL en `supabase/schema.sql` y guía en `docs/SUPABASE_SETUP.md`.
+
 ## Requisitos locales
 
 - Node.js 20+
