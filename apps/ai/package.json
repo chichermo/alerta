@@ -1,0 +1,9 @@
+{
+  "name": "@alerta/ai",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "python -m uvicorn src.main:app --reload --port 8000",
+    "build": "echo \"AI service uses Python\""
+  }
+}

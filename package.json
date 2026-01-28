@@ -1,0 +1,19 @@
+{
+  "name": "alerta-publica",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Plataforma Alerta Pública – Chile (monorepo)",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,ai,web \"npm:dev -w apps/api\" \"npm:dev -w apps/ai\" \"npm:dev -w apps/web\"",
+    "build": "npm run build -w apps/api && npm run build -w apps/ai && npm run build -w apps/web",
+    "lint": "npm run lint -w apps/api && npm run lint -w apps/web",
+    "format": "npm run format -w apps/api && npm run format -w apps/web"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
