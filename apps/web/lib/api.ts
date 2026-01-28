@@ -21,7 +21,9 @@ export function subscribeToIncidents(onChange: () => void) {
     .subscribe();
 
   return () => {
-    void supabase.removeChannel(channel);
+    if (supabase) {
+      void supabase.removeChannel(channel);
+    }
   };
 }
 
