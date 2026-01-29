@@ -232,7 +232,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-slate-950/95 text-slate-100">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-8 pb-28">
-        <header className="flex flex-wrap items-center justify-between gap-4">
+        <header className="flex flex-wrap items-center justify-between gap-4 fade-up">
           <div className="space-y-1">
             <div className="text-xs uppercase tracking-[0.3em] text-slate-400">
               Plataforma ciudadana
@@ -247,7 +247,7 @@ export default function HomePage() {
             <span className="rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-widest text-white/80">
               MVP avanzado
             </span>
-            <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs text-emerald-200">
+            <span className="badge-glow rounded-full bg-emerald-500/20 px-3 py-1 text-xs text-emerald-200">
               Realtime activo
             </span>
           </div>
@@ -256,7 +256,7 @@ export default function HomePage() {
         <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">
           <div
             id="mapa"
-            className="section-anchor rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl shadow-slate-900/40 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-2xl"
+            className="section-anchor rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl shadow-slate-900/40 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-2xl fade-up delay-1"
           >
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
@@ -390,7 +390,7 @@ export default function HomePage() {
             <div className="grid gap-4">
               <div
                 id="indicadores"
-                className="section-anchor rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg"
+                className="section-anchor rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg fade-up delay-2"
               >
                 <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
                   Indicadores
@@ -418,7 +418,7 @@ export default function HomePage() {
             </div>
             <div
               id="timeline"
-              className="section-anchor rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg"
+              className="section-anchor rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg fade-up delay-3"
             >
               <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Timeline inteligente
@@ -459,7 +459,7 @@ export default function HomePage() {
               </div>
             </div>
             <div id="reportes" className="section-anchor space-y-4">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg fade-up delay-4">
                 <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
                   Reportes ciudadanos
                 </div>
@@ -503,8 +503,8 @@ export default function HomePage() {
           </div>
         </div>
       )}
-      <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-white/10 bg-slate-950/90 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-3xl items-center justify-around px-6 py-3 text-xs text-slate-300">
+      <nav className="fixed bottom-4 left-0 right-0 z-30">
+        <div className="mx-auto flex w-full max-w-3xl items-center justify-around rounded-full border border-white/10 bg-slate-950/80 px-6 py-3 text-xs text-slate-300 shadow-2xl shadow-slate-950/60 backdrop-blur">
           <a
             href="#mapa"
             className={`flex flex-col items-center gap-1 ${
@@ -514,7 +514,7 @@ export default function HomePage() {
             }`}
           >
             <span className="text-lg">🗺️</span>
-            Mapa
+            <span className={`rounded-full px-3 py-1 ${activeSection === "mapa" ? "bg-emerald-500/20" : ""}`}>Mapa</span>
           </a>
           <a
             href="#indicadores"
@@ -525,7 +525,7 @@ export default function HomePage() {
             }`}
           >
             <span className="text-lg">📊</span>
-            Indicadores
+            <span className={`rounded-full px-3 py-1 ${activeSection === "indicadores" ? "bg-emerald-500/20" : ""}`}>Indicadores</span>
           </a>
           <a
             href="#timeline"
@@ -536,7 +536,7 @@ export default function HomePage() {
             }`}
           >
             <span className="text-lg">⏱️</span>
-            Timeline
+            <span className={`rounded-full px-3 py-1 ${activeSection === "timeline" ? "bg-emerald-500/20" : ""}`}>Timeline</span>
           </a>
           <a
             href="#reportes"
@@ -547,7 +547,7 @@ export default function HomePage() {
             }`}
           >
             <span className="text-lg">🧾</span>
-            Reportes
+            <span className={`rounded-full px-3 py-1 ${activeSection === "reportes" ? "bg-emerald-500/20" : ""}`}>Reportes</span>
           </a>
         </div>
       </nav>
