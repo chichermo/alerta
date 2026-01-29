@@ -33,6 +33,7 @@ export default function HomePage() {
     center: { lat: number; lng: number } | null;
   }>({ enabled: false, center: null });
   const neighborhoodRadiusKm = 3;
+  const [activeSection, setActiveSection] = useState("mapa");
 
   async function refreshData() {
     try {
@@ -92,6 +93,30 @@ export default function HomePage() {
         window.localStorage.removeItem("alerta-neighborhood");
       }
     }
+  }, []);
+
+  useEffect(() => {
+    const sections = [
+      "mapa",
+      "indicadores",
+      "timeline",
+      "reportes",
+    ].map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    if (sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: "-40% 0px -40% 0px", threshold: 0.1 }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
   }, []);
 
   function toRad(value: number) {
@@ -231,7 +256,7 @@ export default function HomePage() {
         <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">
           <div
             id="mapa"
-            className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl shadow-slate-900/40"
+            className="section-anchor rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl shadow-slate-900/40 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-2xl"
           >
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
@@ -339,7 +364,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            <div className="mt-5 h-[520px] glass-panel floaty">
+            <div className="mt-5 h-[520px] glass-panel floaty transition-all duration-300 ease-out">
               <MapView incidents={visibleIncidents} />
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-slate-300">
@@ -363,7 +388,10 @@ export default function HomePage() {
 
           <div className="space-y-6">
             <div className="grid gap-4">
-              <div id="indicadores" className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div
+                id="indicadores"
+                className="section-anchor rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg"
+              >
                 <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
                   Indicadores
                 </div>
@@ -388,7 +416,10 @@ export default function HomePage() {
               </div>
               <AlertPanel alerts={alerts} />
             </div>
-            <div id="timeline" className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div
+              id="timeline"
+              className="section-anchor rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg"
+            >
               <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Timeline inteligente
               </div>
@@ -396,7 +427,7 @@ export default function HomePage() {
                 {timeline.map((incident) => (
                   <div
                     key={incident.id}
-                    className="rounded-xl border border-white/10 bg-slate-950/70 p-3"
+                    className={`rounded-xl border border-white/10 bg-gradient-to-r ${incidentTypes.find((type) => type.value === incident.type)?.gradientClass || "from-white/10 via-transparent to-transparent"} p-3`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="text-sm font-semibold">{incident.title}</div>
@@ -427,8 +458,8 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
-            <div id="reportes" className="space-y-4">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div id="reportes" className="section-anchor space-y-4">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg">
                 <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
                   Reportes ciudadanos
                 </div>
@@ -474,19 +505,47 @@ export default function HomePage() {
       )}
       <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-white/10 bg-slate-950/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-3xl items-center justify-around px-6 py-3 text-xs text-slate-300">
-          <a href="#mapa" className="flex flex-col items-center gap-1 text-emerald-200">
+          <a
+            href="#mapa"
+            className={`flex flex-col items-center gap-1 ${
+              activeSection === "mapa"
+                ? "text-emerald-200"
+                : "text-slate-300"
+            }`}
+          >
             <span className="text-lg">🗺️</span>
             Mapa
           </a>
-          <a href="#indicadores" className="flex flex-col items-center gap-1">
+          <a
+            href="#indicadores"
+            className={`flex flex-col items-center gap-1 ${
+              activeSection === "indicadores"
+                ? "text-emerald-200"
+                : "text-slate-300"
+            }`}
+          >
             <span className="text-lg">📊</span>
             Indicadores
           </a>
-          <a href="#timeline" className="flex flex-col items-center gap-1">
+          <a
+            href="#timeline"
+            className={`flex flex-col items-center gap-1 ${
+              activeSection === "timeline"
+                ? "text-emerald-200"
+                : "text-slate-300"
+            }`}
+          >
             <span className="text-lg">⏱️</span>
             Timeline
           </a>
-          <a href="#reportes" className="flex flex-col items-center gap-1">
+          <a
+            href="#reportes"
+            className={`flex flex-col items-center gap-1 ${
+              activeSection === "reportes"
+                ? "text-emerald-200"
+                : "text-slate-300"
+            }`}
+          >
             <span className="text-lg">🧾</span>
             Reportes
           </a>

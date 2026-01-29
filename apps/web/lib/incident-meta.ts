@@ -14,6 +14,7 @@ export const incidentTypes: Array<{
   emoji: string;
   mapColor: string;
   chipClass: string;
+  gradientClass: string;
 }> = [
   {
     value: "corte_luz",
@@ -22,6 +23,7 @@ export const incidentTypes: Array<{
     emoji: "💡",
     mapColor: "#ef4444",
     chipClass: "bg-rose-100 text-rose-700",
+    gradientClass: "from-rose-500/20 via-transparent to-transparent",
   },
   {
     value: "corte_agua",
@@ -30,6 +32,7 @@ export const incidentTypes: Array<{
     emoji: "💧",
     mapColor: "#0ea5e9",
     chipClass: "bg-sky-100 text-sky-700",
+    gradientClass: "from-sky-500/20 via-transparent to-transparent",
   },
   {
     value: "incendio",
@@ -37,6 +40,7 @@ export const incidentTypes: Array<{
     emoji: "🔥",
     mapColor: "#f97316",
     chipClass: "bg-orange-100 text-orange-700",
+    gradientClass: "from-orange-500/20 via-transparent to-transparent",
   },
   {
     value: "transporte",
@@ -44,6 +48,7 @@ export const incidentTypes: Array<{
     emoji: "🚇",
     mapColor: "#6366f1",
     chipClass: "bg-indigo-100 text-indigo-700",
+    gradientClass: "from-indigo-500/20 via-transparent to-transparent",
   },
   {
     value: "protesta",
@@ -51,6 +56,7 @@ export const incidentTypes: Array<{
     emoji: "📢",
     mapColor: "#a855f7",
     chipClass: "bg-purple-100 text-purple-700",
+    gradientClass: "from-purple-500/20 via-transparent to-transparent",
   },
   {
     value: "clima",
@@ -59,6 +65,7 @@ export const incidentTypes: Array<{
     emoji: "🌧️",
     mapColor: "#14b8a6",
     chipClass: "bg-teal-100 text-teal-700",
+    gradientClass: "from-teal-500/20 via-transparent to-transparent",
   },
   {
     value: "otro",
@@ -66,6 +73,7 @@ export const incidentTypes: Array<{
     emoji: "📍",
     mapColor: "#64748b",
     chipClass: "bg-slate-100 text-slate-700",
+    gradientClass: "from-slate-500/20 via-transparent to-transparent",
   },
 ];
 
@@ -102,6 +110,7 @@ export function getTypeMeta(value: string) {
       label: "Otro",
       mapColor: "#64748b",
       chipClass: "bg-slate-100 text-slate-700",
+      gradientClass: "from-slate-500/20 via-transparent to-transparent",
     }
   );
 }

@@ -7,6 +7,10 @@ body {
   height: 100%;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-image: radial-gradient(
       circle at top left,
@@ -21,6 +25,10 @@ body {
 .leaflet-container {
   height: 100%;
   width: 100%;
+}
+
+.section-anchor {
+  scroll-margin-top: 80px;
 }
 
 .glass-panel {
