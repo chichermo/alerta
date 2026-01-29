@@ -134,43 +134,92 @@ export default function HomePage() {
                   Seguimiento en tiempo casi real con filtros dinámicos.
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-3 text-xs">
-                <select
-                  className="rounded-full border border-white/10 bg-slate-900/80 px-3 py-1"
-                  value={filters.type}
-                  onChange={(event) =>
-                    setFilters({ ...filters, type: event.target.value })
-                  }
-                >
-                  <option value="all">Todos los tipos</option>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-200">
+                  {filteredIncidents.length} en vista
+                </span>
+              </div>
+            </div>
+            <div className="mt-4 space-y-3">
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.3em] text-slate-400">
+                  Tipo de alerta
+                </div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setFilters({ ...filters, type: "all" })}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                      filters.type === "all"
+                        ? "bg-white text-slate-900"
+                        : "bg-white/10 text-slate-200 hover:bg-white/20"
+                    }`}
+                  >
+                    Todos
+                  </button>
                   {incidentTypes.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
+                    <button
+                      type="button"
+                      key={type.value}
+                      onClick={() => setFilters({ ...filters, type: type.value })}
+                      className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                        filters.type === type.value
+                          ? "bg-white text-slate-900"
+                          : "bg-white/10 text-slate-200 hover:bg-white/20"
+                      }`}
+                    >
+                      <span className="mr-1">{type.emoji}</span>
+                      {type.shortLabel || type.label}
+                    </button>
                   ))}
-                </select>
-                <select
-                  className="rounded-full border border-white/10 bg-slate-900/80 px-3 py-1"
-                  value={filters.confidence}
-                  onChange={(event) =>
-                    setFilters({ ...filters, confidence: event.target.value })
-                  }
-                >
-                  <option value="all">Todos los niveles</option>
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.3em] text-slate-400">
+                  Nivel de confianza
+                </div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setFilters({ ...filters, confidence: "all" })}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                      filters.confidence === "all"
+                        ? "bg-white text-slate-900"
+                        : "bg-white/10 text-slate-200 hover:bg-white/20"
+                    }`}
+                  >
+                    Todos
+                  </button>
                   {Object.entries(confidenceMeta).map(([key, meta]) => (
-                    <option key={key} value={key}>
-                      {meta.label}
-                    </option>
+                    <button
+                      type="button"
+                      key={key}
+                      onClick={() => setFilters({ ...filters, confidence: key })}
+                      className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                        filters.confidence === key
+                          ? "bg-white text-slate-900"
+                          : "bg-white/10 text-slate-200 hover:bg-white/20"
+                      }`}
+                    >
+                      {meta.shortLabel}
+                    </button>
                   ))}
-                </select>
-                <input
-                  placeholder="Buscar..."
-                  className="rounded-full border border-white/10 bg-slate-900/80 px-3 py-1 text-xs"
-                  value={filters.search}
-                  onChange={(event) =>
-                    setFilters({ ...filters, search: event.target.value })
-                  }
-                />
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="text-[10px] uppercase tracking-[0.3em] text-slate-400">
+                  Buscar
+                </div>
+                <div className="flex-1">
+                  <input
+                    placeholder="Nombre del incidente, comuna, zona..."
+                    className="w-full rounded-full border border-white/10 bg-slate-900/80 px-4 py-2 text-xs text-slate-100 placeholder:text-slate-500"
+                    value={filters.search}
+                    onChange={(event) =>
+                      setFilters({ ...filters, search: event.target.value })
+                    }
+                  />
+                </div>
               </div>
             </div>
             <div className="mt-5 h-[520px]">
@@ -183,12 +232,10 @@ export default function HomePage() {
                   key={type.value}
                   className="rounded-full bg-white/10 px-2 py-1"
                 >
+                  <span className="mr-1">{type.emoji}</span>
                   {type.label}
                 </span>
               ))}
-              <span className="ml-auto text-slate-400">
-                {filteredIncidents.length} eventos en vista
-              </span>
             </div>
           </div>
 

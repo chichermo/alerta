@@ -94,6 +94,7 @@ export default function ReportForm({ onCreated }: { onCreated: () => void }) {
                   : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
+              <span className="mr-1">{type.emoji}</span>
               {type.label}
             </button>
           ))}
