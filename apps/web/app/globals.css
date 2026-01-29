@@ -37,6 +37,23 @@ body {
   background: rgba(15, 23, 42, 0.9);
 }
 
+.mapboxgl-ctrl-group {
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.25);
+}
+
+.mapboxgl-ctrl-group button {
+  background-color: rgba(15, 23, 42, 0.9);
+  color: #fff;
+}
+
+.mapboxgl-popup-content {
+  border-radius: 14px;
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.25);
+  font-family: inherit;
+}
+
 .section-anchor {
   scroll-margin-top: 80px;
 }
