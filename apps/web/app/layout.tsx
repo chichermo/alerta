@@ -1,5 +1,8 @@
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Alerta Pública – Chile",
@@ -13,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className="min-h-screen bg-slate-950 text-slate-100 antialiased">
+      <body className={`${inter.className} min-h-screen bg-slate-950 text-slate-100 antialiased`}>
         {children}
       </body>
     </html>

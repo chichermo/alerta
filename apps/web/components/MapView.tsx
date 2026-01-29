@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleMarker, MapContainer, Popup, TileLayer } from "react-leaflet";
+import { CircleMarker, MapContainer, Popup, TileLayer, ZoomControl } from "react-leaflet";
 import { Incident } from "@alerta/shared";
 import { getTypeMeta } from "../lib/incident-meta";
 import type { LatLngExpression } from "leaflet";
@@ -9,14 +9,18 @@ const defaultCenter: [number, number] = [-33.45, -70.66];
 
 export default function MapView({ incidents }: { incidents: Incident[] }) {
   return (
-    <div className="h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-900/60 shadow-lg shadow-slate-900/40">
+    <div className="h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-white/90 shadow-lg shadow-slate-900/40">
       <MapContainer
         center={defaultCenter}
         zoom={11}
         scrollWheelZoom
         className="h-full w-full"
+        zoomControl={false}
       >
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        />
+        <ZoomControl position="bottomright" />
         {incidents.map((incident) => (
           (() => {
             const position: LatLngExpression = [
@@ -31,7 +35,7 @@ export default function MapView({ incidents }: { incidents: Incident[] }) {
             pathOptions={{
               color: getTypeMeta(incident.type).mapColor,
               fillColor: getTypeMeta(incident.type).mapColor,
-              fillOpacity: 0.7,
+              fillOpacity: 0.65,
               weight: 2,
             }}
           >

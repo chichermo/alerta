@@ -61,7 +61,7 @@ export default function ReportForm({ onCreated }: { onCreated: () => void }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+      className="space-y-4 rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-sm"
     >
       <div>
         <div className="text-sm font-semibold text-slate-900">
@@ -72,7 +72,7 @@ export default function ReportForm({ onCreated }: { onCreated: () => void }) {
         </p>
       </div>
       <input
-        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
         placeholder="Título del incidente"
         value={form.title}
         onChange={(event) => setForm({ ...form, title: event.target.value })}
@@ -101,7 +101,7 @@ export default function ReportForm({ onCreated }: { onCreated: () => void }) {
         </div>
       </div>
       <textarea
-        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
         placeholder="Descripción (opcional)"
         value={form.description}
         onChange={(event) =>
@@ -123,7 +123,7 @@ export default function ReportForm({ onCreated }: { onCreated: () => void }) {
           <input
             type="number"
             step="0.0001"
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
             value={form.lat}
             onChange={(event) =>
               setForm({ ...form, lat: Number(event.target.value) })
@@ -132,7 +132,7 @@ export default function ReportForm({ onCreated }: { onCreated: () => void }) {
           <input
             type="number"
             step="0.0001"
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
             value={form.lng}
             onChange={(event) =>
               setForm({ ...form, lng: Number(event.target.value) })

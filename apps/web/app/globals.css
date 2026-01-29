@@ -27,6 +27,16 @@ body {
   width: 100%;
 }
 
+.leaflet-control-zoom a {
+  background: rgba(15, 23, 42, 0.7);
+  color: #fff;
+  border: 0;
+}
+
+.leaflet-control-zoom a:hover {
+  background: rgba(15, 23, 42, 0.9);
+}
+
 .section-anchor {
   scroll-margin-top: 80px;
 }

@@ -481,9 +481,16 @@ export default function HomePage() {
       </button>
       {showReport && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/70 p-4">
-          <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-white p-4 text-slate-900">
+          <div className="w-full max-w-xl rounded-[28px] border border-white/10 bg-white p-5 text-slate-900 shadow-2xl">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold">Reporte rápido</div>
+              <div>
+                <div className="text-xs uppercase tracking-[0.3em] text-slate-400">
+                  Reporte rápido
+                </div>
+                <div className="text-lg font-semibold">
+                  Comparte un incidente en segundos
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => setShowReport(false)}
@@ -492,7 +499,10 @@ export default function HomePage() {
                 Cerrar
               </button>
             </div>
-            <div className="mt-3">
+            <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div className="mb-3 text-xs text-slate-500">
+                Información protegida · No expongas datos personales.
+              </div>
               <ReportForm
                 onCreated={() => {
                   refreshData();
