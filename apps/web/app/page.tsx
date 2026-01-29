@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { io } from "socket.io-client";
 import { Incident } from "@alerta/shared";
 import dynamic from "next/dynamic";
@@ -27,6 +27,12 @@ export default function HomePage() {
     confidence: "all",
     search: "",
   });
+  const [showReport, setShowReport] = useState(false);
+  const [neighborhood, setNeighborhood] = useState<{
+    enabled: boolean;
+    center: { lat: number; lng: number } | null;
+  }>({ enabled: false, center: null });
+  const neighborhoodRadiusKm = 3;
 
   async function refreshData() {
     try {
@@ -71,6 +77,74 @@ export default function HomePage() {
     };
   }, []);
 
+  useEffect(() => {
+    const stored = window.localStorage.getItem("alerta-neighborhood");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as {
+          enabled: boolean;
+          center: { lat: number; lng: number } | null;
+        };
+        if (parsed.center) {
+          setNeighborhood(parsed);
+        }
+      } catch {
+        window.localStorage.removeItem("alerta-neighborhood");
+      }
+    }
+  }, []);
+
+  function toRad(value: number) {
+    return (value * Math.PI) / 180;
+  }
+
+  function distanceKm(
+    a: { lat: number; lng: number },
+    b: { lat: number; lng: number }
+  ) {
+    const R = 6371;
+    const dLat = toRad(b.lat - a.lat);
+    const dLng = toRad(b.lng - a.lng);
+    const lat1 = toRad(a.lat);
+    const lat2 = toRad(b.lat);
+    const h =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLng / 2) *
+        Math.sin(dLng / 2) *
+        Math.cos(lat1) *
+        Math.cos(lat2);
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+
+  async function handleToggleNeighborhood() {
+    if (neighborhood.enabled) {
+      const next = { enabled: false, center: null };
+      setNeighborhood(next);
+      window.localStorage.removeItem("alerta-neighborhood");
+      return;
+    }
+    if (!navigator.geolocation) {
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const center = {
+          lat: Number(position.coords.latitude.toFixed(5)),
+          lng: Number(position.coords.longitude.toFixed(5)),
+        };
+        const next = { enabled: true, center };
+        setNeighborhood(next);
+        window.localStorage.setItem(
+          "alerta-neighborhood",
+          JSON.stringify(next)
+        );
+      },
+      () => {
+        setNeighborhood({ enabled: false, center: null });
+      }
+    );
+  }
+
   const filteredIncidents = incidents.filter((incident) => {
     if (filters.type !== "all" && incident.type !== filters.type) {
       return false;
@@ -89,6 +163,35 @@ export default function HomePage() {
     }
     return true;
   });
+
+  const visibleIncidents = useMemo(() => {
+    if (!neighborhood.enabled || !neighborhood.center) return filteredIncidents;
+    return filteredIncidents.filter(
+      (incident) =>
+        distanceKm(neighborhood.center!, incident.location) <=
+        neighborhoodRadiusKm
+    );
+  }, [filteredIncidents, neighborhood]);
+
+  const timeline = [...visibleIncidents]
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    )
+    .slice(0, 8);
+
+  function insightText(incident: Incident) {
+    if (incident.confidence === "confirmado") {
+      return "Confirmado por fuente oficial o múltiples señales.";
+    }
+    if (incident.reportsCount >= 3) {
+      return "Validado por reportes cercanos recientes.";
+    }
+    if (incident.type === "incendio") {
+      return "Riesgo elevado en temporada de calor.";
+    }
+    return "En observación, esperando más señales.";
+  }
 
   const totalReports = incidents.reduce(
     (total, incident) => total + incident.reportsCount,
@@ -136,8 +239,19 @@ export default function HomePage() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-200">
-                  {filteredIncidents.length} en vista
+                  {visibleIncidents.length} en vista
                 </span>
+                <button
+                  type="button"
+                  onClick={handleToggleNeighborhood}
+                  className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                    neighborhood.enabled
+                      ? "bg-emerald-400 text-slate-900"
+                      : "bg-white/10 text-slate-200 hover:bg-white/20"
+                  }`}
+                >
+                  {neighborhood.enabled ? "Mi barrio activo" : "Activar Mi barrio"}
+                </button>
               </div>
             </div>
             <div className="mt-4 space-y-3">
@@ -223,7 +337,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="mt-5 h-[520px]">
-              <MapView incidents={filteredIncidents} />
+              <MapView incidents={visibleIncidents} />
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-slate-300">
               <span className="text-slate-400">Leyenda:</span>
@@ -236,6 +350,11 @@ export default function HomePage() {
                   {type.label}
                 </span>
               ))}
+              {neighborhood.enabled && neighborhood.center && (
+                <span className="ml-auto rounded-full bg-emerald-500/20 px-2 py-1 text-emerald-200">
+                  Mi barrio · {neighborhoodRadiusKm} km
+                </span>
+              )}
             </div>
           </div>
 
@@ -266,11 +385,80 @@ export default function HomePage() {
               </div>
               <AlertPanel alerts={alerts} />
             </div>
-            <ReportForm onCreated={refreshData} />
-            <IncidentList incidents={filteredIncidents} />
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                Timeline inteligente
+              </div>
+              <div className="mt-3 space-y-3">
+                {timeline.map((incident) => (
+                  <div
+                    key={incident.id}
+                    className="rounded-xl border border-white/10 bg-slate-950/70 p-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm font-semibold">{incident.title}</div>
+                      <span className="rounded-full bg-white/10 px-2 py-1 text-[10px] text-slate-300">
+                        {new Date(incident.updatedAt).toLocaleTimeString("es-CL", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                      <span className="rounded-full bg-white/10 px-2 py-1">
+                        {incidentTypes.find((type) => type.value === incident.type)
+                          ?.emoji}{" "}
+                        {incidentTypes.find((type) => type.value === incident.type)
+                          ?.label}
+                      </span>
+                      <span className="rounded-full bg-white/10 px-2 py-1">
+                        {confidenceMeta[incident.confidence]?.shortLabel ||
+                          incident.confidence}
+                      </span>
+                      <span>{incident.reportsCount} reportes</span>
+                    </div>
+                    <p className="mt-2 text-xs text-slate-400">
+                      {insightText(incident)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <IncidentList incidents={visibleIncidents} />
           </div>
         </section>
       </div>
+      <button
+        type="button"
+        onClick={() => setShowReport(true)}
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-emerald-400 px-4 py-3 text-sm font-semibold text-slate-900 shadow-xl shadow-emerald-400/40"
+      >
+        + Reportar
+      </button>
+      {showReport && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/70 p-4">
+          <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-white p-4 text-slate-900">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-semibold">Reporte rápido</div>
+              <button
+                type="button"
+                onClick={() => setShowReport(false)}
+                className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold"
+              >
+                Cerrar
+              </button>
+            </div>
+            <div className="mt-3">
+              <ReportForm
+                onCreated={() => {
+                  refreshData();
+                  setShowReport(false);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
