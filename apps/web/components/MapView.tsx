@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import Map, { Marker, NavigationControl, Popup } from "react-map-gl";
+import { CircleMarker, MapContainer, Popup, TileLayer, ZoomControl } from "react-leaflet";
 import { Incident } from "@alerta/shared";
 import { getTypeMeta } from "../lib/incident-meta";
+import type { LatLngExpression } from "leaflet";
 
-const defaultCenter = { lat: -33.45, lng: -70.66 };
+const defaultCenter: [number, number] = [-33.45, -70.66];
 
 export default function MapView({
   incidents,
@@ -18,76 +18,62 @@ export default function MapView({
   showLabels: boolean;
   intensityMode: boolean;
 }) {
-  const [selected, setSelected] = useState<Incident | null>(null);
-
-  const mapStyleUrl = useMemo(() => {
-    if (!showLabels) {
-      return "mapbox://styles/mapbox/satellite-v9";
-    }
-    return mapStyle === "dark"
-      ? "mapbox://styles/mapbox/dark-v11"
-      : "mapbox://styles/mapbox/light-v11";
-  }, [mapStyle, showLabels]);
+  const baseUrl =
+    mapStyle === "dark"
+      ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+      : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+  const labelUrl =
+    mapStyle === "dark"
+      ? "https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png"
+      : "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png";
 
   return (
     <div className="h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-white/90 shadow-lg shadow-slate-900/40">
-      <Map
-        initialViewState={{
-          latitude: defaultCenter.lat,
-          longitude: defaultCenter.lng,
-          zoom: 11,
-        }}
-        mapStyle={mapStyleUrl}
-        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-        reuseMaps
-        style={{ width: "100%", height: "100%" }}
+      <MapContainer
+        center={defaultCenter}
+        zoom={11}
+        scrollWheelZoom
+        className="h-full w-full"
+        zoomControl={false}
       >
-        <NavigationControl position="bottom-right" />
-        {incidents.map((incident) => {
-          const size = intensityMode
-            ? Math.min(28, 12 + incident.reportsCount * 1.6)
-            : 12;
-          const color = getTypeMeta(incident.type).mapColor;
-          return (
-            <Marker
-              key={incident.id}
-              longitude={incident.location.lng}
-              latitude={incident.location.lat}
-              anchor="center"
-            >
-              <button
-                type="button"
-                onClick={() => setSelected(incident)}
-                className="incident-pulse rounded-full border border-white/80"
-                style={{
-                  width: size,
-                  height: size,
-                  backgroundColor: color,
-                  boxShadow: `0 0 12px ${color}66`,
-                }}
-                aria-label={`Incidente ${incident.title}`}
-              />
-            </Marker>
-          );
-        })}
-        {selected && (
-          <Popup
-            longitude={selected.location.lng}
-            latitude={selected.location.lat}
-            closeButton
-            closeOnClick={false}
-            onClose={() => setSelected(null)}
-            anchor="top"
+        <TileLayer url={baseUrl} />
+        {showLabels && <TileLayer url={labelUrl} />}
+        <ZoomControl position="bottomright" />
+        {incidents.map((incident) => (
+          (() => {
+            const position: LatLngExpression = [
+              incident.location.lat,
+              incident.location.lng,
+            ];
+            const radius = intensityMode
+              ? Math.min(18, 8 + incident.reportsCount * 1.2)
+              : 10;
+            return (
+          <CircleMarker
+            key={incident.id}
+            center={position}
+            radius={radius}
+            className="incident-pulse"
+            pathOptions={{
+              color: getTypeMeta(incident.type).mapColor,
+              fillColor: getTypeMeta(incident.type).mapColor,
+              fillOpacity: 0.65,
+              weight: 2,
+            }}
           >
-            <div className="space-y-1 text-slate-900">
-              <div className="font-semibold">{selected.title}</div>
-              <div className="text-xs text-slate-600">
-                {selected.type} · {selected.confidence} · {selected.reportsCount} reportes
+            <Popup>
+              <div className="space-y-1 text-slate-900">
+                <div className="font-semibold">{incident.title}</div>
+                <div className="text-xs text-slate-600">
+                  {incident.type} · {incident.confidence} · {incident.reportsCount} reportes
+                </div>
               </div>
-            </div>
-          </Popup>
-        )}
-      </Map>
+            </Popup>
+          </CircleMarker>
+            );
+          })()
+        ))}
+      </MapContainer>
     </div>
   );
 }
