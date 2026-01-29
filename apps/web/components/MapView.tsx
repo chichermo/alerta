@@ -7,7 +7,26 @@ import type { LatLngExpression } from "leaflet";
 
 const defaultCenter: [number, number] = [-33.45, -70.66];
 
-export default function MapView({ incidents }: { incidents: Incident[] }) {
+export default function MapView({
+  incidents,
+  mapStyle,
+  showLabels,
+  intensityMode,
+}: {
+  incidents: Incident[];
+  mapStyle: "light" | "dark";
+  showLabels: boolean;
+  intensityMode: boolean;
+}) {
+  const baseUrl =
+    mapStyle === "dark"
+      ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+      : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+  const labelUrl =
+    mapStyle === "dark"
+      ? "https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png"
+      : "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png";
+
   return (
     <div className="h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-white/90 shadow-lg shadow-slate-900/40">
       <MapContainer
@@ -17,9 +36,8 @@ export default function MapView({ incidents }: { incidents: Incident[] }) {
         className="h-full w-full"
         zoomControl={false}
       >
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        />
+        <TileLayer url={baseUrl} />
+        {showLabels && <TileLayer url={labelUrl} />}
         <ZoomControl position="bottomright" />
         {incidents.map((incident) => (
           (() => {
@@ -27,11 +45,15 @@ export default function MapView({ incidents }: { incidents: Incident[] }) {
               incident.location.lat,
               incident.location.lng,
             ];
+            const radius = intensityMode
+              ? Math.min(18, 8 + incident.reportsCount * 1.2)
+              : 10;
             return (
           <CircleMarker
             key={incident.id}
             center={position}
-            radius={10}
+            radius={radius}
+            className="incident-pulse"
             pathOptions={{
               color: getTypeMeta(incident.type).mapColor,
               fillColor: getTypeMeta(incident.type).mapColor,

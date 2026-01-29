@@ -34,6 +34,9 @@ export default function HomePage() {
   }>({ enabled: false, center: null });
   const neighborhoodRadiusKm = 3;
   const [activeSection, setActiveSection] = useState("mapa");
+  const [mapStyle, setMapStyle] = useState<"light" | "dark">("light");
+  const [showLabels, setShowLabels] = useState(true);
+  const [intensityMode, setIntensityMode] = useState(true);
 
   async function refreshData() {
     try {
@@ -363,9 +366,56 @@ export default function HomePage() {
                   />
                 </div>
               </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="text-[10px] uppercase tracking-[0.3em] text-slate-400">
+                  Capas del mapa
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setMapStyle(mapStyle === "light" ? "dark" : "light")
+                    }
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                      mapStyle === "dark"
+                        ? "bg-slate-100 text-slate-900"
+                        : "bg-white/10 text-slate-200 hover:bg-white/20"
+                    }`}
+                  >
+                    {mapStyle === "dark" ? "Modo oscuro" : "Modo claro"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowLabels((prev) => !prev)}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                      showLabels
+                        ? "bg-slate-100 text-slate-900"
+                        : "bg-white/10 text-slate-200 hover:bg-white/20"
+                    }`}
+                  >
+                    {showLabels ? "Etiquetas on" : "Etiquetas off"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIntensityMode((prev) => !prev)}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                      intensityMode
+                        ? "bg-slate-100 text-slate-900"
+                        : "bg-white/10 text-slate-200 hover:bg-white/20"
+                    }`}
+                  >
+                    {intensityMode ? "Intensidad on" : "Intensidad off"}
+                  </button>
+                </div>
+              </div>
             </div>
             <div className="mt-5 h-[520px] glass-panel floaty transition-all duration-300 ease-out">
-              <MapView incidents={visibleIncidents} />
+              <MapView
+                incidents={visibleIncidents}
+                mapStyle={mapStyle}
+                showLabels={showLabels}
+                intensityMode={intensityMode}
+              />
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-slate-300">
               <span className="text-slate-400">Leyenda:</span>
