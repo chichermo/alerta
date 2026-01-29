@@ -9,14 +9,14 @@ const defaultCenter: [number, number] = [-33.45, -70.66];
 
 export default function MapView({ incidents }: { incidents: Incident[] }) {
   return (
-    <div className="h-full w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-200/40">
+    <div className="h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-900/60 shadow-lg shadow-slate-900/40">
       <MapContainer
         center={defaultCenter}
         zoom={11}
         scrollWheelZoom
         className="h-full w-full"
       >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
         {incidents.map((incident) => (
           (() => {
             const position: LatLngExpression = [
@@ -32,10 +32,11 @@ export default function MapView({ incidents }: { incidents: Incident[] }) {
               color: getTypeMeta(incident.type).mapColor,
               fillColor: getTypeMeta(incident.type).mapColor,
               fillOpacity: 0.7,
+              weight: 2,
             }}
           >
             <Popup>
-              <div className="space-y-1">
+              <div className="space-y-1 text-slate-900">
                 <div className="font-semibold">{incident.title}</div>
                 <div className="text-xs text-slate-600">
                   {incident.type} · {incident.confidence}

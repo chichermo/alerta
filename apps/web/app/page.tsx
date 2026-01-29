@@ -206,7 +206,7 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-slate-950/95 text-slate-100">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-8 pb-28">
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="text-xs uppercase tracking-[0.3em] text-slate-400">
@@ -229,7 +229,10 @@ export default function HomePage() {
         </header>
 
         <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl shadow-slate-900/40">
+          <div
+            id="mapa"
+            className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl shadow-slate-900/40"
+          >
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-semibold">Mapa en vivo</h2>
@@ -336,7 +339,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            <div className="mt-5 h-[520px]">
+            <div className="mt-5 h-[520px] glass-panel floaty">
               <MapView incidents={visibleIncidents} />
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-slate-300">
@@ -360,7 +363,7 @@ export default function HomePage() {
 
           <div className="space-y-6">
             <div className="grid gap-4">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div id="indicadores" className="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
                   Indicadores
                 </div>
@@ -385,7 +388,7 @@ export default function HomePage() {
               </div>
               <AlertPanel alerts={alerts} />
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div id="timeline" className="rounded-2xl border border-white/10 bg-white/5 p-4">
               <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Timeline inteligente
               </div>
@@ -424,14 +427,24 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
-            <IncidentList incidents={visibleIncidents} />
+            <div id="reportes" className="space-y-4">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                  Reportes ciudadanos
+                </div>
+                <p className="mt-2 text-sm text-slate-300">
+                  Reporta en segundos y fortalece la verificación comunitaria.
+                </p>
+              </div>
+              <IncidentList incidents={visibleIncidents} />
+            </div>
           </div>
         </section>
       </div>
       <button
         type="button"
         onClick={() => setShowReport(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-emerald-400 px-4 py-3 text-sm font-semibold text-slate-900 shadow-xl shadow-emerald-400/40"
+        className="fixed bottom-24 right-6 z-40 flex items-center gap-2 rounded-full bg-emerald-400 px-4 py-3 text-sm font-semibold text-slate-900 shadow-xl shadow-emerald-400/40 pulse-glow"
       >
         + Reportar
       </button>
@@ -459,6 +472,26 @@ export default function HomePage() {
           </div>
         </div>
       )}
+      <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-white/10 bg-slate-950/90 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-3xl items-center justify-around px-6 py-3 text-xs text-slate-300">
+          <a href="#mapa" className="flex flex-col items-center gap-1 text-emerald-200">
+            <span className="text-lg">🗺️</span>
+            Mapa
+          </a>
+          <a href="#indicadores" className="flex flex-col items-center gap-1">
+            <span className="text-lg">📊</span>
+            Indicadores
+          </a>
+          <a href="#timeline" className="flex flex-col items-center gap-1">
+            <span className="text-lg">⏱️</span>
+            Timeline
+          </a>
+          <a href="#reportes" className="flex flex-col items-center gap-1">
+            <span className="text-lg">🧾</span>
+            Reportes
+          </a>
+        </div>
+      </nav>
     </main>
   );
 }
